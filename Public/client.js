@@ -2,6 +2,7 @@ var dates=[];
 var records;
 var id;
 
+//utility to fill the date and time options
 updateRecords();
 function updateRecords() {
     $('.loader').removeClass('visually-hidden');
