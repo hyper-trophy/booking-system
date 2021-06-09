@@ -1,5 +1,5 @@
 var dates=[];
-var result;
+var records;
 var id;
 $('.form-group').addClass('visually-hidden');
 $('.confirm').addClass('visually-hidden');
@@ -9,9 +9,8 @@ $.ajax({
     success: function (res) {
         $('.form-group').removeClass('visually-hidden');
         $('.loader').addClass('visually-hidden');
-        result=JSON.parse(res);
-        console.log(result);
-        result.forEach(e => {
+        records=JSON.parse(res);
+        records.forEach(e => {
             if(!dates.includes(e.fields.Date)){
                 dates.push(e.fields.Date);
             }
@@ -28,7 +27,7 @@ document.getElementById('date-selector').addEventListener('change', ()=>{
     var dt= sel.options[sel.selectedIndex].text;
     $('#time-selector').html("");
     $('#time-selector').append('<option value="select"> Select Time </option>');
-    result.forEach(e=>{
+    records.forEach(e=>{
         if(e.fields.Date == dt){
             $('#time-selector').append('<option value="'+e.Slots+'">'+ e.fields.Slots +'</option>');
         }
@@ -36,29 +35,35 @@ document.getElementById('date-selector').addEventListener('change', ()=>{
 })
 
 $('.form-group button')[0].addEventListener('click',()=>{
+    //get date time and name filled by user
     var sel = document.getElementById("date-selector");
     var dt= sel.options[sel.selectedIndex].text;
     sel=document.getElementById("time-selector");
     var time= sel.options[sel.selectedIndex].text;
     id="someID";
     var name=$('[name="naem"]')[0].value;
+
+    //check if user filled nothing
     if(name==''||time=="Select date first"||time=='Select Time'){
         $('.error').removeClass('visually-hidden');
         return;
     }
     $('.error').addClass('visually-hidden');
 
+    //show loading
     $('.form-group').addClass('visually-hidden');
     $('.loader').removeClass('visually-hidden');
     
-    result.every(e => {
+    //get ID of record chosen by user
+    records.every(e => {
         if(e.fields.Date==dt && e.fields.Slots==time){
             id=e.id;
             return false;
         }
         return true;
     });
-    console.log(id+" "+name);
+
+    //make AJAX post request to book the slot
     $.ajax({
         method: "POST",
         url: "/book",

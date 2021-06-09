@@ -26,7 +26,19 @@ app.get('/records', (req, res)=>{
 });
 
 app.post('/book', (req, res)=>{
-    base('Schedule').update([
+
+  base('Schedule').find(req.body.id, function(err, record) {
+
+    if (err) { 
+      res.send("Some error occured, try again");
+      return; 
+    }
+
+    if(record.fields.Status=="Appointment Booked"){
+      res.send("The slot you are trying to book is already full");
+    }else{
+      //got a slot and update it
+      base('Schedule').update([
         {
           "id": req.body.id,
           "fields": {
@@ -40,7 +52,9 @@ app.post('/book', (req, res)=>{
           return;
         }
       });
-    res.send("Your Appointment is successfull!");
+      res.send("Your Appointment is successfull!");
+    }
+  }); 
 });
 
 app.listen( process.env.PORT || 3000, ()=>{
