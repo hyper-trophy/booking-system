@@ -1,26 +1,34 @@
 var dates=[];
 var records;
 var id;
-$('.form-group').addClass('visually-hidden');
-$('.confirm').addClass('visually-hidden');
-$.ajax({
-    type: "GET",
-    url: "/records",
-    success: function (res) {
-        $('.form-group').removeClass('visually-hidden');
-        $('.loader').addClass('visually-hidden');
-        records=JSON.parse(res);
-        records.forEach(e => {
-            if(!dates.includes(e.fields.Date)){
-                dates.push(e.fields.Date);
-            }
-        });
-        $('#date-selector')[0].options[0].text="Select date";
-        dates.forEach(e => {
-            $('#date-selector').append('<option value="'+e+'">'+ e +'</option>');
-        });
-    }
-});
+
+//utility to fill the date and time options
+updateRecords();
+function updateRecords() {
+    $('.loader').removeClass('visually-hidden');
+    $('.form-group').addClass('visually-hidden');
+    $('.confirm').addClass('visually-hidden');
+    $.ajax({
+        type: "GET",
+        url: "/records",
+        success: function (res) {
+            $('.form-group').removeClass('visually-hidden');
+            $('.loader').addClass('visually-hidden');
+            records=JSON.parse(res);
+            records.forEach(e => {
+                if(!dates.includes(e.fields.Date)){
+                    dates.push(e.fields.Date);
+                }
+            });
+            $('#date-selector').html("");
+            $('#date-selector').append('<option value="select"> Select Date </option>');
+            dates.forEach(e => {
+                $('#date-selector').append('<option value="'+e+'">'+ e +'</option>');
+            });
+        }
+    });    
+}
+
 
 document.getElementById('date-selector').addEventListener('change', ()=>{
     var sel = document.getElementById("date-selector");
@@ -80,7 +88,6 @@ $('.form-group button')[0].addEventListener('click',()=>{
 
 function addlisteners() {
     $('#back')[0].addEventListener('click',()=>{
-        $('.form-group').removeClass('visually-hidden');
-        $('.confirm').addClass('visually-hidden');
+        updateRecords();
     })
 }
